@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_app/model/api_adapter.dart';
 import 'package:quiz_app/model/model_quiz.dart';
 import 'package:quiz_app/screen/screen_quiz.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,23 +11,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Quiz> quizs = [
-    Quiz.fromMap({
-      'title': 'test',
-      'candidates': ['a', 'b', 'c', 'd'],
-      'answer': 0
-    }),
-    Quiz.fromMap({
-      'title': 'test',
-      'candidates': ['a', 'b', 'c', 'd'],
-      'answer': 0
-    }),
-    Quiz.fromMap({
-      'title': 'test',
-      'candidates': ['a', 'b', 'c', 'd'],
-      'answer': 0
-    }),
-  ];
+  List<Quiz> quizs = [];
+  bool isLoading = false;
+  _fetchQuizs() async {
+    setState(() {
+      isLoading = true;
+    });
+    var url =
+        Uri.parse('https://hywn-quiz-app-back.herokuapp.com/api/quizs/3/');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      setState(() {
+        quizs = parseQuizs(utf8.decode(response.bodyBytes));
+        isLoading = false;
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +99,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPrimary: Colors.deepPurple,
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => QuizScreen(
-                              quizs: quizs,
+                        _fetchQuizs().whenComplete(() {
+                          return Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => QuizScreen(
+                                quizs: quizs,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        });
                       },
                     ),
                   ),
