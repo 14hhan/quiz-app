@@ -49,7 +49,7 @@ class ResultScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                     width: width * 0.73,
-                    height: height * 0.25,
+                    height: height * 0.32,
                     child: Column(
                       children: <Widget>[
                         Container(
@@ -65,7 +65,7 @@ class ResultScreen extends StatelessWidget {
                         Text(
                           '당신의 점수는',
                           style: TextStyle(
-                            fontSize: width * 0.048,
+                            fontSize: width * 0.045,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
